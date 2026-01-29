@@ -1,0 +1,142 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* ===== DEFAULT BODY (WITH LOGO) ===== */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    background:
+        linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)),
+        url("../images/dreams-soft-logo.jpeg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 150vmin;
+    background-attachment: fixed; /* Makes it look consistent */
+}
+
+/* ===== OPTIONAL: Remove logo for specific pages if needed ===== */
+.no-logo-bg {
+    background: #f5f7fa !important;
+    background-image: none !important;
+}
+
+/* ===== HEADER ===== */
+.header {
+    height: 70px;
+    background: linear-gradient(to right, #0b5ed7, #198754);
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    color: white;
+}
+
+.logo {
+    height: 45px;
+    margin-right: 15px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+/* ===== CENTER CONTENT ===== */
+.content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ===== AUTH BOX ===== */
+.auth-box {
+    width: 380px;
+    background: white;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.auth-box h2 {
+    margin-bottom: 25px;
+    color: #0b5ed7;
+}
+
+.auth-box input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 18px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.auth-box input:focus {
+    outline: none;
+    border-color: #0b5ed7;
+}
+
+.auth-box button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    background: #0b5ed7;
+}
+
+.auth-box button:hover {
+    background: #084298;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    height: 40px;
+    background: linear-gradient(to right, #0b5ed7, #198754);
+    text-align: center;
+    line-height: 40px;
+    color: black;
+    font-size: 14px;
+}
+
+/* ===== For home.jsp content boxes ===== */
+.box-container {
+    display: flex;
+    gap: 50px;
+}
+
+.box {
+    width: 220px;
+    height: 160px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+}
+
+.box:hover {
+    transform: translateY(-8px);
+}
+
+.btn {
+    width: 150px;
+    padding: 14px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    background: #0b5ed7;
+}
