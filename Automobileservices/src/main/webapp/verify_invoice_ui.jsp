@@ -5,299 +5,299 @@
 <title>Verify Invoice Entry</title>
 <style>
 * {
-    box-sizing: border-box;
-    font-family: "Segoe UI", Arial, sans-serif;
+	box-sizing: border-box;
+	font-family: "Segoe UI", Arial, sans-serif;
 }
 
 body {
-    margin: 0;
-    background: linear-gradient(135deg, #e8f1ff, #f5f9ff);
-    color: #1e293b;
+	margin: 0;
+	background: linear-gradient(135deg, #e8f1ff, #f5f9ff);
+	color: #1e293b;
 }
 
 .header {
-    height: 85px;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+	height: 85px;
+	background: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 30px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-    gap: 14px;
+	display: flex;
+	align-items: center;
+	gap: 14px;
 }
 
 .logo img {
-    height: 65px;
-    max-width: 200px;
-    object-fit: contain;
+	height: 65px;
+	max-width: 200px;
+	object-fit: contain;
 }
 
 .logo strong {
-    font-size: 20px;
-    color: #1e40af;
-    font-weight: 600;
+	font-size: 20px;
+	color: #1e40af;
+	font-weight: 600;
 }
 
 .header-right {
-    display: flex;
-    align-items: center;
-    gap: 30px;
+	display: flex;
+	align-items: center;
+	gap: 30px;
 }
 
 .timer {
-    font-weight: 600;
-    font-size: 15px;
-    color: #2563eb;
+	font-weight: 600;
+	font-size: 15px;
+	color: #2563eb;
 }
 
 .logout {
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    padding: 10px 22px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
+	background: #2563eb;
+	color: #fff;
+	border: none;
+	padding: 10px 22px;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 14px;
 }
 
 .main {
-    padding: 20px;
+	padding: 20px;
 }
 
 .top-section {
-    display: flex;
-    gap: 20px;
+	display: flex;
+	gap: 20px;
 }
 
 .form-box {
-    width: 25%;
-    background: #ffffff;
-    padding: 22px;
-    border-radius: 12px;
-    box-shadow: 0 15px 30px rgba(37,99,235,0.15);
+	width: 25%;
+	background: #ffffff;
+	padding: 22px;
+	border-radius: 12px;
+	box-shadow: 0 15px 30px rgba(37, 99, 235, 0.15);
 }
 
 .form-box h3 {
-    margin-bottom: 18px;
-    color: #1d4ed8;
+	margin-bottom: 18px;
+	color: #1d4ed8;
 }
 
 .form-group {
-    margin-bottom: 14px;
+	margin-bottom: 14px;
 }
 
 .form-group label {
-    font-size: 13px;
-    font-weight: 600;
-    display: block;
-    margin-bottom: 5px;
+	font-size: 13px;
+	font-weight: 600;
+	display: block;
+	margin-bottom: 5px;
 }
 
 .form-group input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #c7d2fe;
+	width: 100%;
+	padding: 10px;
+	border-radius: 6px;
+	border: 1px solid #c7d2fe;
 }
 
 .footer-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 18px;
+	display: flex;
+	gap: 12px;
+	margin-top: 18px;
 }
 
 .action-btn {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
+	background: #2563eb;
+	color: white;
+	border: none;
+	padding: 8px 18px;
+	border-radius: 8px;
+	font-size: 13px;
+	cursor: pointer;
 }
 
 .image-box {
-    width: 75%;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 15px 30px rgba(37,99,235,0.15);
-    position: relative;
-    overflow: hidden;
-    min-height: 340px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	width: 75%;
+	background: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 15px 30px rgba(37, 99, 235, 0.15);
+	position: relative;
+	overflow: hidden;
+	min-height: 340px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .invoice-img {
-    max-width: 90%;
-    max-height: 90%;
-    transition: transform 0.2s ease-in-out;
-    border: 1px solid #ddd;
+	max-width: 90%;
+	max-height: 90%;
+	transition: transform 0.2s ease-in-out;
+	border: 1px solid #ddd;
 }
 
 .zoom-controls {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 50px;
+	position: absolute;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	gap: 50px;
 }
 
 .zoom-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #2563eb;
-    color: #ffffff;
-    font-size: 24px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background: #2563eb;
+	color: #ffffff;
+	font-size: 24px;
+	font-weight: bold;
+	border: none;
+	cursor: pointer;
 }
 
 .table-box {
-    margin-top: 25px;
-    background: #ffffff;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 15px 30px rgba(37,99,235,0.15);
-    overflow-x: auto;
+	margin-top: 25px;
+	background: #ffffff;
+	padding: 15px;
+	border-radius: 12px;
+	box-shadow: 0 15px 30px rgba(37, 99, 235, 0.15);
+	overflow-x: auto;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 900px;
+	width: 100%;
+	border-collapse: collapse;
+	min-width: 900px;
 }
 
 th {
-    background: #2563eb;
-    color: white;
-    padding: 10px;
-    font-size: 14px;
+	background: #2563eb;
+	color: white;
+	padding: 10px;
+	font-size: 14px;
 }
 
 td {
-    border: 1px solid #e2e8f0;
-    padding: 8px;
+	border: 1px solid #e2e8f0;
+	padding: 8px;
 }
 
 td input {
-    width: 100%;
-    padding: 7px;
-    border-radius: 4px;
-    border: 1px solid #c7d2fe;
+	width: 100%;
+	padding: 7px;
+	border-radius: 4px;
+	border: 1px solid #c7d2fe;
 }
 /* ð Frozen input look */
 td input:disabled {
-    background-color: #e5e7eb;
-    color: #475569;
-    font-weight: 600;
-    cursor: not-allowed;
+	background-color: #e5e7eb;
+	color: #475569;
+	font-weight: 600;
+	cursor: not-allowed;
 }
 
 .action-cell {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
+	display: flex;
+	gap: 6px;
+	justify-content: center;
 }
 
 .row-btn {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
+	background: #2563eb;
+	color: white;
+	border: none;
+	padding: 6px 10px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 12px;
 }
 
-@media (max-width: 1200px) {
-    .top-section {
-        flex-direction: column;
-    }
-
-    .form-box,
-    .image-box {
-        width: 100%;
-    }
+@media ( max-width : 1200px) {
+	.top-section {
+		flex-direction: column;
+	}
+	.form-box, .image-box {
+		width: 100%;
+	}
 }
 
-@media (max-width: 768px) {
-    .row-btn {
-        padding: 5px 8px;
-        font-size: 11px;
-    }
-
-    th, td {
-        font-size: 12px;
-    }
+@media ( max-width : 768px) {
+	.row-btn {
+		padding: 5px 8px;
+		font-size: 11px;
+	}
+	th, td {
+		font-size: 12px;
+	}
 }
 
 .success-msg {
-    background: #d4edda;
-    color: #155724;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #c3e6cb;
+	background: #d4edda;
+	color: #155724;
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 15px;
+	border: 1px solid #c3e6cb;
 }
 
 .error-msg {
-    background: #f8d7da;
-    color: #721c24;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #f5c6cb;
+	background: #f8d7da;
+	color: #721c24;
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 15px;
+	border: 1px solid #f5c6cb;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-    <div class="logo">
-        <img src="<%= request.getContextPath() %>/images/dreams-soft-logo.jpeg">
-        <strong>Dreams Soft Solutions</strong>
-    </div>
-    <div class="header-right">
-        <div class="timer" id="timer">Time: 00:00:00</div>
-        <div class="user-info">Welcome, <strong><%= session.getAttribute("username") %></strong></div>
-        <a href="logout"><button class="logout">Logout</button></a>
-    </div>
-</div>
+	<div class="header">
+		<div class="logo">
+			<img
+				src="<%= request.getContextPath() %>/images/dreams-soft-logo.jpeg">
+			<strong>Dreams Soft Solutions</strong>
+		</div>
+		<div class="header-right">
+			<div class="timer" id="timer">Time: 00:00:00</div>
+			<div class="user-info">
+				Welcome, <strong><%= session.getAttribute("username") %></strong>
+			</div>
+			<a href="logout"><button class="logout">Logout</button></a>
+		</div>
+	</div>
 
-<div class="main">
-    <% 
+	<div class="main">
+		<% 
         // Show messages
         String success = request.getParameter("success");
         String error = request.getParameter("error");
         
         if (success != null) {
     %>
-        <div class="success-msg">
-            <%= success %>
-        </div>
-    <% 
+		<div class="success-msg">
+			<%= success %>
+		</div>
+		<% 
         }
         if (error != null) {
     %>
-        <div class="error-msg">
-            <%= error %>
-        </div>
-    <% 
+		<div class="error-msg">
+			<%= error %>
+		</div>
+		<% 
         }
     %>
-    
-    <% 
+
+		<% 
         String username = (String) session.getAttribute("username");
         String imagePath = null;
         Integer imageId = null;
@@ -360,129 +360,142 @@ td input:disabled {
         
         if (imagePath == null) {
     %>
-    <div style="text-align: center; padding: 50px;">
-        <h2>No invoices to process</h2>
-        <p>All invoices have been processed.</p>
-        <p><a href="login.jsp">go to login</a></p>
-    </div>
-    <%
+		<div style="text-align: center; padding: 50px;">
+			<h2>No invoices to process</h2>
+			<p>All invoices have been processed.</p>
+			<p>
+				<a href="login.jsp">go to login</a>
+			</p>
+		</div>
+		<%
             return;
         }
     %>
-    
-    <form id="verifyForm" method="post" action="SimpleVerifyServlet">
-        <input type="hidden" name="imageId" value="<%= imageId %>">
-        
-        <div class="top-section">
-            <div class="form-box">
-                <h3>Verify Invoice Details</h3>
-                
-                <div class="form-group">
-                    <label>Vendor Name *</label>
-                    <input type="text" name="vendorName" id="vendorName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Invoice Number *</label>
-                    <input type="text" name="invoiceNumber" id="invoiceNumber" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Invoice Issue Date</label>
-                    <input type="text" name="invoiceDate" id="invoiceDate">
-                </div>
-                
-                <div class="form-group">
-                    <label>P.O.#</label>
-                    <input type="text" name="poNumber" id="poNumber">
-                </div>
-                
-                <div class="form-group">
-                    <label>Invoice Total (â¹)</label>
-                    <input type="number" name="invoiceTotal" id="invoiceTotal" step="0.01" onchange="calculateSubTotal();">
-                </div>
-                            <div style="margin-top:10px;">
-                <input type="checkbox" id="imgNotClearChk" onclick="toggleSkipBtn()">
-                <label for="imgNotClearChk" style="font-size: 13px; font-weight: 600;">Image is not clear</label>
-            </div>
 
-                
-                <div class="footer-actions">
-                     <button class="action-btn" type="button" id="skipBtn" disabled onclick="skipInvoice()">Skip</button>
-					<button type="button" class="action-btn" id="holdBtn" onclick="toggleHold()">Hold</button>
-                   <button type="submit" name="actionStatus" value="submit" class="action-btn">Submit</button>
+		<form id="verifyForm" method="post" action="SimpleVerifyServlet">
+			<input type="hidden" name="imageId" value="<%= imageId %>">
 
-                </div>
-            </div>
+			<div class="top-section">
+				<div class="form-box">
+					<h3>Verify Invoice Details</h3>
 
-            <div class="image-box">
-                <img id="invoiceImage"
-                     src="<%= request.getContextPath() %>/invoice_images/<%= imagePath %>"
-                     class="invoice-img"
-                     alt="Invoice"
-                     onerror="this.src='<%= request.getContextPath() %>/images/sample-invoice.png'">
-                
-                <div class="zoom-controls">
-                    <button type="button" class="zoom-btn" onclick="zoomIn()">+</button>
-                    <button type="button" class="zoom-btn" onclick="zoomOut()">-</button>
-                </div>
-                
-                <div style="position: absolute; top: 10px; left: 10px; background: rgba(37,99,235,0.9); color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px;">
-                    Invoice ID: <%= imageId %>
-                </div>
-            </div>
-        </div>
+					<div class="form-group">
+						<label>Vendor Name *</label> <input type="text" name="vendorName"
+							id="vendorName" required>
+					</div>
 
-        <div class="table-box">
-            <table id="invoiceTable">
-                <thead>
-                    <tr>
-                        <th>Item No</th>
-                        <th>Item Name</th>
-                        <th>Price (â¹)</th>
-                        <th>Quantity</th>
-                        <th>CGST (%)</th>
-                        <th>SGST (%)</th>
-                        <th>Total (â¹)</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="item-row">	
-                        <td><input type="text" name="itemNo[]" class="itemNo" placeholder="001"></td>
-                        <td><input type="text" name="itemName[]" class="itemName" placeholder="Item description"></td>
-                        <td><input type="number" name="itemPrice[]" class="itemPrice" step="0.01" placeholder="0.00" onchange="calculateRowTotal(this)"></td>
-                        <td><input type="number"name="quantity[]" class="quantity" step="001" placeholder="0" oninput="calculateRowTotal(this)"></td>
-                        <td><input type="number" name="itemCGST[]" class="itemCGST" step="0.01" placeholder="9" onchange="calculateRowTotal(this)"></td>
-                        <td><input type="number" name="itemSGST[]" class="itemSGST" step="0.01" placeholder="9" onchange="calculateRowTotal(this)"></td>
-                        <td><input type="number" name="itemTotal[]" class="itemTotal" step="0.01" placeholder="0.00" readonly></td>
-                        <td class="action-cell">
-        <button type="button" class="row-btn" onclick="addRow(this)">Add</button>
-        <button type="button" class="row-btn" onclick="editRow(this)">Edit</button>
-        <button type="button" class="row-btn" onclick="deleteRow(this)">Delete</button>
-    </td>
-                    </tr>
-                    <tr id="subtotalRow">
-  						  <td colspan="6" style="text-align:right; font-weight:600;">
-  						      Sub Total
-  						  </td>
- 				   <td>
-   			     <input type="text"
-               id="subTotal"
-               name="subTotal"
-               readonly
-               style="font-weight:700; background:#e5e7eb;">
-    </td>
-    <td></td>
-</tr>
-                    
-                </tbody>
-            </table>
-        </div>
-    </form>
-</div>
-<div id="toast"></div>
-<script>
+					<div class="form-group">
+						<label>Invoice Number *</label> <input type="text"
+							name="invoiceNumber" id="invoiceNumber" required>
+					</div>
+
+					<div class="form-group">
+						<label>Invoice Issue Date</label> <input type="text"
+							name="invoiceDate" id="invoiceDate">
+					</div>
+
+					<div class="form-group">
+						<label>P.O.#</label> <input type="text" name="poNumber"
+							id="poNumber">
+					</div>
+
+					<div class="form-group">
+						<label>Invoice Total (â¹)</label> <input type="number"
+							name="invoiceTotal" id="invoiceTotal" step="0.01"
+							onchange="calculateSubTotal();">
+					</div>
+					<div style="margin-top: 10px;">
+						<input type="checkbox" id="imgNotClearChk"
+							onclick="toggleSkipBtn()"> <label for="imgNotClearChk"
+							style="font-size: 13px; font-weight: 600;">Image is not
+							clear</label>
+					</div>
+
+
+					<div class="footer-actions">
+						<!-- ===== SKIP BUTTON (ONLY CHANGE: disabled REMOVED) ===== -->
+						<button class="action-btn" type="button" id="skipBtn"
+							onclick="skipInvoice()">Skip</button>
+						<button type="button" class="action-btn" id="holdBtn"
+							onclick="toggleHold()">Hold</button>
+						<button type="submit" name="actionStatus" value="submit"
+							class="action-btn">Submit</button>
+
+					</div>
+				</div>
+
+				<div class="image-box">
+					<img id="invoiceImage"
+						src="<%= request.getContextPath() %>/invoice_images/<%= imagePath %>"
+						class="invoice-img" alt="Invoice"
+						onerror="this.src='<%= request.getContextPath() %>/images/sample-invoice.png'">
+
+					<div class="zoom-controls">
+						<button type="button" class="zoom-btn" onclick="zoomIn()">+</button>
+						<button type="button" class="zoom-btn" onclick="zoomOut()">-</button>
+					</div>
+
+					<div
+						style="position: absolute; top: 10px; left: 10px; background: rgba(37, 99, 235, 0.9); color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px;">
+						Invoice ID:
+						<%= imageId %>
+					</div>
+				</div>
+			</div>
+
+			<div class="table-box">
+				<table id="invoiceTable">
+					<thead>
+						<tr>
+							<th>Item No</th>
+							<th>Item Name</th>
+							<th>Price (â¹)</th>
+							<th>Quantity</th>
+							<th>CGST (%)</th>
+							<th>SGST (%)</th>
+							<th>Total (â¹)</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="item-row">
+							<td><input type="text" name="itemNo[]" class="itemNo"
+								placeholder="001"></td>
+							<td><input type="text" name="itemName[]" class="itemName"
+								placeholder="Item description"></td>
+							<td><input type="number" name="itemPrice[]"
+								class="itemPrice" step="0.01" placeholder="0.00"
+								onchange="calculateRowTotal(this)"></td>
+							<td><input type="number" name="quantity[]" class="quantity"
+								step="001" placeholder="0" oninput="calculateRowTotal(this)"></td>
+							<td><input type="number" name="itemCGST[]" class="itemCGST"
+								step="0.01" placeholder="9" onchange="calculateRowTotal(this)"></td>
+							<td><input type="number" name="itemSGST[]" class="itemSGST"
+								step="0.01" placeholder="9" onchange="calculateRowTotal(this)"></td>
+							<td><input type="number" name="itemTotal[]"
+								class="itemTotal" step="0.01" placeholder="0.00" readonly></td>
+							<td class="action-cell">
+								<button type="button" class="row-btn" onclick="addRow(this)">Add</button>
+								<button type="button" class="row-btn" onclick="editRow(this)">Edit</button>
+								<button type="button" class="row-btn" onclick="deleteRow(this)">Delete</button>
+							</td>
+						</tr>
+						<tr id="subtotalRow">
+							<td colspan="6" style="text-align: right; font-weight: 600;">
+								Sub Total</td>
+							<td><input type="text" id="subTotal" name="subTotal"
+								readonly style="font-weight: 700; background: #e5e7eb;">
+							</td>
+							<td></td>
+						</tr>
+
+					</tbody>
+				</table>
+			</div>
+		</form>
+	</div>
+	<div id="toast"></div>
+	<script>
 let zoomLevel = 1;
 
 let timerInterval = null;
@@ -714,38 +727,35 @@ function toggleSkipBtn() {
 }
 
 /* ✅ Skip action */
+/* ===== SKIP ACTION (UNCHANGED LOGIC, THIS SHOWS POPUP) ===== */
 function skipInvoice() {
 
-    // safety check (extra protection)
     const chk = document.getElementById("imgNotClearChk");
+
     if (!chk.checked) {
-        alert("Please check 'Image is not clear' before skipping.");
+        alert("Please click on the 'Image is not clear' checkbox before skipping.");
         return;
     }
 
     const reason = prompt("Reason for skipping this invoice:");
-    if (reason === null) return; // user cancelled
+    if (reason === null) return;
 
-    // create a form dynamically
     const form = document.createElement("form");
     form.method = "post";
     form.action = "SimpleVerifyServlet";
 
-    // imageId
     const imgInput = document.createElement("input");
     imgInput.type = "hidden";
     imgInput.name = "imageId";
     imgInput.value = "<%= imageId %>";
     form.appendChild(imgInput);
 
-    // actionStatus = skip
     const actionInput = document.createElement("input");
     actionInput.type = "hidden";
     actionInput.name = "actionStatus";
     actionInput.value = "skip";
     form.appendChild(actionInput);
 
-    // reason
     const reasonInput = document.createElement("input");
     reasonInput.type = "hidden";
     reasonInput.name = "reason";
@@ -753,7 +763,7 @@ function skipInvoice() {
     form.appendChild(reasonInput);
 
     document.body.appendChild(form);
-    form.submit();   // 🚀 SEND TO SERVLET
+    form.submit();
 }
 
 /* ✅ TOP POPUP */

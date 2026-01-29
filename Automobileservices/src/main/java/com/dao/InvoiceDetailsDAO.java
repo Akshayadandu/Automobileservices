@@ -2,8 +2,6 @@ package com.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 import com.db.Dbconnection;
 import com.model.InvoiceDetailsModel;
 
@@ -30,11 +28,11 @@ public class InvoiceDetailsDAO {
 
             ps.setString(7, m.getItemNo());
             ps.setString(8, m.getItemName());
-            ps.setDouble(9, m.getPrice());
-            ps.setInt(10, m.getQuantity());
-            ps.setDouble(11, m.getCgst());
-            ps.setDouble(12, m.getSgst());
-            ps.setDouble(13, m.getItemTotal());
+            ps.setString(9, m.getPrice());
+            ps.setString(10, m.getQuantity());
+            ps.setString(11, m.getCgst());
+            ps.setString(12, m.getSgst());
+            ps.setString(13, m.getItemTotal());
             ps.setDouble(14, m.getSubTotal());
 
             ps.setString(15, m.getVerifiedBy());
@@ -43,64 +41,6 @@ public class InvoiceDetailsDAO {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    public ResultSet getInvoiceItemsByInvoiceNo(String invoiceNumber) {
-
-        try {
-            Connection con = Dbconnection.getConnection();
-
-            String sql =
-                "SELECT verified_by AS username, " +
-                "vendor_name, invoice_number, " +
-                "item_no, item_name, quantity, item_total " +
-                "FROM invoice_details " +
-                "WHERE invoice_number = ? " +
-                "ORDER BY invoice_number";
-
-            PreparedStatement ps = con.prepareStatement(
-                sql,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY
-            );
-
-            ps.setString(1, invoiceNumber);
-
-            return ps.executeQuery();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public ResultSet getInvoicesByUsername(String username) {
-
-        try {
-            Connection con = Dbconnection.getConnection();
-
-            String sql =
-                "SELECT verified_by AS username, " +
-                "vendor_name, invoice_number, " +
-                "item_no, item_name, quantity, item_total " +
-                "FROM invoice_details " +
-                "WHERE verified_by = ? " +
-                "ORDER BY invoice_number";
-
-            PreparedStatement ps = con.prepareStatement(
-                sql,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_READ_ONLY
-            );
-
-            ps.setString(1, username);
-
-            return ps.executeQuery();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
     }
 }

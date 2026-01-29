@@ -14,11 +14,11 @@ public class InvoiceDetailsModel {
 
     private String itemNo;
     private String itemName;
-    private double price;
-    private int quantity;
-    private double cgst;
-    private double sgst;
-    private double itemTotal;
+    private String price;
+    private String quantity;
+    private String cgst;
+    private String sgst;
+    private String itemTotal;
     private double subTotal;
 
     private String verifiedBy;
@@ -49,20 +49,20 @@ public class InvoiceDetailsModel {
     public String getItemName() { return itemName; }
     public void setItemName(String itemName) { this.itemName = itemName; }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public String getPrice() { return price; }
+    public void setPrice(String price) { this.price = price; }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public String getQuantity() { return quantity; }
+    public void setQuantity(String quantity) { this.quantity = quantity; }
 
-    public double getCgst() { return cgst; }
-    public void setCgst(double cgst) { this.cgst = cgst; }
+    public String getCgst() { return cgst; }
+    public void setCgst(String cgst) { this.cgst = cgst; }
 
-    public double getSgst() { return sgst; }
-    public void setSgst(double sgst) { this.sgst = sgst; }
+    public String getSgst() { return sgst; }
+    public void setSgst(String sgst) { this.sgst = sgst; }
 
-    public double getItemTotal() { return itemTotal; }
-    public void setItemTotal(double itemTotal) { this.itemTotal = itemTotal; }
+    public String getItemTotal() { return itemTotal; }
+    public void setItemTotal(String itemTotal) { this.itemTotal = itemTotal; }
 
     public double getSubTotal() { return subTotal; }
     public void setSubTotal(double subTotal) { this.subTotal = subTotal; }

@@ -43,7 +43,11 @@ body {
 	color: #1e40af;
 	font-weight: 600;
 }
-
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
 .logout {
 	background: #2563eb;
 	color: #fff;
@@ -197,6 +201,12 @@ input:disabled {
 	font-weight: 600;
 	cursor: not-allowed;
 }
+.timer {
+    font-weight: 600;
+    font-size: 15px;
+    color: #2563eb;
+}
+
 
 .checkbox-group {
 	display: flex;
@@ -262,18 +272,116 @@ input:disabled {
 	%>
 
 
-	<form id="invoiceForm">
 
 		<div class="header">
 			<div class="logo">
 				<img src="<%= request.getContextPath() %>/images/dreams-soft-logo.jpeg">
 				<strong>Dreams Soft Solutions</strong>
 			</div>
-			<a href="logout"><button class="logout" type="button">Logout</button></a>
+			<div class="header-right">
+       			 <div class="timer" id="timer">Time: --</div>
+      			  <div class="user-info">Welcome, <strong><%= session.getAttribute("username") %></strong></div>
+     		   <a href="logout"><button class="logout">Logout</button></a>
+    			</div>
 		</div>
 
 		<div class="main">
+    <% 
+        // Show messages
+        String success = request.getParameter("success");
+        String error = request.getParameter("error");
+        
+        if (success != null) {
+    %>
+        <div class="success-msg">
+            <%= success %>
+        </div>
+    <% 
+        }
+        if (error != null) {
+    %>
+        <div class="error-msg">
+            <%= error %>
+        </div>
+    <% 
+        }
+    %>
+    
+    <% 
+        String username = (String) session.getAttribute("username");
+       // String imagePath = null;
+        Integer imageId = null;
+        String timeTaken = "0.00";
+        if (username == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+        
+        try {
+            com.db.Dbconnection db = new com.db.Dbconnection();
+            java.sql.Connection conn = db.getConnection();
+            
+            // Get image for user
+            String sql = "SELECT image_id, image_path FROM invoice_images WHERE assigned_to_user = ? AND status = 'in_progress' LIMIT 1";
+            java.sql.PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+            java.sql.ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                imageId = rs.getInt("image_id");
+                imagePath = rs.getString("image_path");
+                int totalSeconds = rs.getInt("verify_duration_seconds");
+                if (rs.wasNull()) {
+                    totalSeconds = 0;
+                }
 
+                int minutes = totalSeconds / 60;
+                int secondsLeft = totalSeconds % 60;
+
+                timeTaken = minutes + "." + String.format("%02d", secondsLeft);
+            } else {
+                // Assign new image
+                String assignSql = "SELECT image_id, image_path FROM invoice_images WHERE status = 'pending' LIMIT 1";
+                java.sql.Statement stmt = conn.createStatement();
+                java.sql.ResultSet assignRs = stmt.executeQuery(assignSql);
+                
+                if (assignRs.next()) {
+                    imageId = assignRs.getInt("image_id");
+                    imagePath = assignRs.getString("image_path");
+                    
+                    // Assign to user
+                    String updateSql = "UPDATE invoice_images SET assigned_to_user = ?, status = 'in_progress', verify_start_time = NOW() WHERE image_id = ?";
+                    java.sql.PreparedStatement updatePs = conn.prepareStatement(updateSql);
+                    updatePs.setString(1, username);
+                    updatePs.setInt(2, imageId);
+                    updatePs.executeUpdate();
+                    updatePs.close();
+                }
+                assignRs.close();
+                stmt.close();
+            }
+            rs.close();
+            ps.close();
+            conn.close();
+            
+        } catch (Exception e) {
+            out.println("<div class='error-msg'>Error: " + e.getMessage() + "</div>");
+        }
+        
+        if (imagePath == null) {
+    %>
+    <div style="text-align: center; padding: 50px;">
+        <h2>No invoices to process</h2>
+        <p>All invoices have been processed.</p>
+        <p><a href="login.jsp">go to login</a></p>
+    </div>
+    <%
+            return;
+        }
+    %>
+    
+		<form id="invoiceForm">
+		        <input type="hidden" name="imageId" value="<%= imageId %>">
 			<div class="top-section">
 
 				<div class="form-box" id="">
@@ -431,9 +539,9 @@ input:disabled {
 	    const total = baseAmount + gstAmount;
 
 	    row.querySelector(".itemTotal").value = total.toFixed(2);
-
 	    calculateSubTotal();
 	}
+
 	function calculateSubTotal() {
 	    let sum = 0;
 	    document.querySelectorAll("#invoiceTable .item-row").forEach(row => {
@@ -454,7 +562,6 @@ input:disabled {
 	        }
 	    }
 
-	
 	    inputs.forEach(i => i.disabled = true);
 
 	    const newRow = row.cloneNode(true);
@@ -472,10 +579,10 @@ input:disabled {
 	    table.appendChild(newRow);
 	    table.appendChild(subtotalRow);
 	}
+
 	function deleteRow(button) {
 	    const row = button.closest("tr");
 
-	    
 	    const totalItemRows =
 	        document.querySelectorAll(".row-btn[onclick^='deleteRow']").length;
 
@@ -493,6 +600,7 @@ input:disabled {
 	        if (addBtn) addBtn.disabled = false;
 	    });
 	}
+
 	function editRow(btn) {
 	    const row = btn.closest(".item-row");
 	    const inputs = row.querySelectorAll("input");
@@ -505,14 +613,14 @@ input:disabled {
 	        });
 	        btn.innerText = "Save";
 	        btn.style.background = "#16a34a";
-	    } 
-	    else {
+	    } else {
 	        inputs.forEach(i => i.disabled = true);
 	        btn.innerText = "Edit";
 	        btn.style.background = "#2563eb";
 	        calculateSubTotal();
 	    }
 	}
+
 	function edit(btn) {
 	    const freezeInputs = document.querySelectorAll(".freeze-field");
 
@@ -544,22 +652,17 @@ input:disabled {
 	        document.getElementById("invoiceImage").style.transform = `scale(${zoomLevel})`;
 	    }
 	}
+
 	function toggleSkipBtn() {
 	    var chk = document.getElementById("imgNotClearChk");
 	    var skipBtn = document.getElementById("skipBtn");
-
-	    if (chk.checked) {
-	        skipBtn.disabled = false;  
-	        
-	    } else {
-	        skipBtn.disabled = true;  
-	        
-	    }
+	    skipBtn.disabled = !chk.checked;
 	}
+
 	function skip() {
 		alert("skipped");
-		
 	}
+
 	function openSkipModal() {
 	    document.getElementById("skipModal").style.display = "flex";
 	}
@@ -575,18 +678,86 @@ input:disabled {
 	    const user = document.getElementById("skipUsername").value.trim();
 	    const pass = document.getElementById("skipPassword").value.trim();
 
-	    // ✅ FIXED credentials
 	    if (user === "dreams" && pass === "dreams") {
 	        closeSkipModal();
 	        alert("Skip authorized successfully");
-
-	        // 👉 Your skip logic here
-	        // window.location.href = "skipAction.jsp";
 	    } else {
 	        document.getElementById("skipError").style.display = "block";
 	    }
 	}
-</script>
 
+	/* =====================================================
+	   SUBMIT VALIDATION (DATE + TOTAL CHECK)
+	   ===================================================== */
+	document.getElementById("invoiceForm").addEventListener("submit", function (e) {
+
+	    // enable disabled inputs before submit
+	    this.querySelectorAll("input:disabled").forEach(i => i.disabled = false);
+
+	    /* ===== DATE VALIDATION (FROM VERIFY JSP – UNCHANGED) ===== */
+	    const dateInput =
+	        document.querySelectorAll(".form-box .freeze-field")[2].value.trim();
+
+	    if (!dateInput) {
+	        alert("Please enter Invoice Issue Date.");
+	        e.preventDefault();
+	        return;
+	    }
+
+	    const datePattern = /^(\d{2})-(\d{2})-(\d{4})$/;
+	    if (!datePattern.test(dateInput)) {
+	        alert("Invoice Date must be in DD-MM-YYYY format.");
+	        e.preventDefault();
+	        return;
+	    }
+
+	    const parts = dateInput.split("-");
+	    const enteredDate = new Date(parts[2], parts[1] - 1, parts[0]);
+
+	    if (
+	        enteredDate.getDate() != parts[0] ||
+	        enteredDate.getMonth() != parts[1] - 1 ||
+	        enteredDate.getFullYear() != parts[2]
+	    ) {
+	        alert("Invalid Invoice Date.");
+	        e.preventDefault();
+	        return;
+	    }
+
+	    const today = new Date();
+	    today.setHours(0, 0, 0, 0);
+
+	    if (enteredDate > today) {
+	        alert("Invoice Date cannot be a future date.");
+	        e.preventDefault();
+	        return;
+	    }
+
+	    /* ===== TOTAL VALIDATION (ALREADY WORKING) ===== */
+	    const invoiceTotal =
+	        parseFloat(document.querySelectorAll(".form-box .freeze-field")[4].value);
+	    const subTotal =
+	        parseFloat(document.getElementById("subTotal").value);
+
+	    if (isNaN(invoiceTotal) || isNaN(subTotal)) {
+	        alert("Invoice Total and Item totals are required.");
+	        e.preventDefault();
+	        return;
+	    }
+
+	    if (invoiceTotal.toFixed(2) !== subTotal.toFixed(2)) {
+	        alert(
+	            "Invoice Total and Item Sub Total must match.\n\n" +
+	            "Invoice Total: " + invoiceTotal.toFixed(2) + "\n" +
+	            "Sub Total: " + subTotal.toFixed(2)
+	        );
+	        e.preventDefault();
+	        return;
+	    }
+
+	    // ✅ All validations passed → submit allowed
+	});
+</script>
+	
 </body>
 </html>
