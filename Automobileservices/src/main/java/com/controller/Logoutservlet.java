@@ -3,7 +3,9 @@ package com.controller;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.Map;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,34 +23,50 @@ public class Logoutservlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
+        String username = null;
 
         if (session != null) {
-            String username = (String) session.getAttribute("username");
+            username = (String) session.getAttribute("username");
+            
+            ServletContext context = getServletContext();
+            Map<String, String> activeUsers =
+                (Map<String, String>) context.getAttribute("activeUsers");
 
-            if (username != null) {
-                try (Connection conn = new Dbconnection().getConnection()) {
-                    // Reset all images assigned to this user back to pending
-                    // This handles cases where user logs out while holding an image or just has one open
-                    String sql =
-                        "UPDATE invoice_images SET " +
-                        " assigned_to_user = NULL, " +
-                        " status = 'pending', " +
-                        " verify_start_time = NULL " +
-                        " WHERE assigned_to_user = ? " +
-                        " AND status IN ('in_progress', 'hold')";
-
-                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                        ps.setString(1, username);
-                        ps.executeUpdate();
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (username != null && activeUsers != null) {
+                activeUsers.remove(username);
             }
 
             session.invalidate();
         }
+
+        try (Connection conn = new Dbconnection().getConnection()) {
+
+            if (username != null) {
+
+                // VERIFY release
+                String verifySql =
+                    "UPDATE invoice_images SET assigned_to_user=NULL, status='pending', verify_start_time=NULL " +
+                    "WHERE assigned_to_user=? AND status ='in_progress' ";
+
+                try (PreparedStatement ps = conn.prepareStatement(verifySql)) {
+                    ps.setString(1, username);
+                    ps.executeUpdate();
+                }
+
+                // QC release
+                String qcSql =
+                    "UPDATE invoice_images SET assigned_to_qc=NULL,status='completed' WHERE assigned_to_qc=? AND status ='qc_in_progress' ";
+
+                try (PreparedStatement ps = conn.prepareStatement(qcSql)) {
+                    ps.setString(1, username);
+                    ps.executeUpdate();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         response.sendRedirect("login.jsp");
     }

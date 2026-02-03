@@ -17,18 +17,18 @@
 <div class="content">
     <div class="auth-box">
         <h2>Login</h2>
+<%
+String error = request.getParameter("error");
+if (error != null) {
+%>
+<p style="color:red; font-size:14px; text-align:center;">
+    <%= error.replace("+", " ") %>
+</p>
+<%
+}
+%>
 
-        <% if (request.getParameter("error") != null) { %>
-            <p style="color:red; font-size:14px; text-align:center;">
-                Invalid username or password
-            </p>
-        <% } %>
 
-        <% if (request.getParameter("success") != null) { %>
-            <p style="color:green; font-size:14px; text-align:center;">
-                Login successful
-            </p>
-        <% } %>
 
         <form action="LoginServlet" method="post">
             <input type="text" name="username" placeholder="Username" required>

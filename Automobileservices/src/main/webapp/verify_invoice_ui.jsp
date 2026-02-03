@@ -218,6 +218,15 @@ td input:disabled {
 	cursor: pointer;
 	font-size: 12px;
 }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
 
 @media ( max-width : 1200px) {
 	.top-section {
@@ -299,11 +308,18 @@ td input:disabled {
 
 		<% 
         String username = (String) session.getAttribute("username");
+		String mode = (String) session.getAttribute("mode");
+		
         String imagePath = null;
         Integer imageId = null;
         String timeTaken = "0.00";
+        
         if (username == null) {
             response.sendRedirect("login.jsp");
+            return;
+        }
+        if ("qc".equals(mode)) {
+            response.sendRedirect("home.jsp?error=Finish+QC+first");
             return;
         }
         
@@ -364,7 +380,7 @@ td input:disabled {
 			<h2>No invoices to process</h2>
 			<p>All invoices have been processed.</p>
 			<p>
-				<a href="login.jsp">go to login</a>
+				click on logout 
 			</p>
 		</div>
 		<%
@@ -400,21 +416,20 @@ td input:disabled {
 					</div>
 
 					<div class="form-group">
-						<label>Invoice Total (â¹)</label> <input type="number"
+						<label>Invoice Total (&#8377;)</label> <input type="number"
 							name="invoiceTotal" id="invoiceTotal" step="0.01"
 							onchange="calculateSubTotal();">
 					</div>
 					<div style="margin-top: 10px;">
 						<input type="checkbox" id="imgNotClearChk"
-							onclick="toggleSkipBtn()"> <label for="imgNotClearChk"
-							style="font-size: 13px; font-weight: 600;">Image is not
-							clear</label>
+							onclick="toggleSkipbtn()"> <label for="imgNotClearChk"
+							style="font-size: 13px; font-weight: 600;">Please select "Image is not clear" before skipping.</label>
 					</div>
 
 
 					<div class="footer-actions">
 						<!-- ===== SKIP BUTTON (ONLY CHANGE: disabled REMOVED) ===== -->
-						<button class="action-btn" type="button" id="skipBtn"
+						<button class="action-btn" type="button" id="Skipbtn"
 							onclick="skipInvoice()">Skip</button>
 						<button type="button" class="action-btn" id="holdBtn"
 							onclick="toggleHold()">Hold</button>
@@ -449,11 +464,11 @@ td input:disabled {
 						<tr>
 							<th>Item No</th>
 							<th>Item Name</th>
-							<th>Price (â¹)</th>
 							<th>Quantity</th>
+							<th>Price (&#8377;)</th>
 							<th>CGST (%)</th>
 							<th>SGST (%)</th>
-							<th>Total (â¹)</th>
+							<th>Total (&#8377;)</th>
 							<th>Action</th>
 						</tr>
 					</thead>
@@ -463,17 +478,17 @@ td input:disabled {
 								placeholder="001"></td>
 							<td><input type="text" name="itemName[]" class="itemName"
 								placeholder="Item description"></td>
+								<td><input type="number" name="quantity[]" class="quantity"
+								step="001" placeholder="00" oninput="calculateRowTotal(this)"></td>
 							<td><input type="number" name="itemPrice[]"
-								class="itemPrice" step="0.01" placeholder="0.00"
-								onchange="calculateRowTotal(this)"></td>
-							<td><input type="number" name="quantity[]" class="quantity"
-								step="001" placeholder="0" oninput="calculateRowTotal(this)"></td>
+								class="itemPrice" step="0.00" placeholder="0.00"
+								oninput="calculateRowTotal(this)"></td>
 							<td><input type="number" name="itemCGST[]" class="itemCGST"
-								step="0.01" placeholder="9" onchange="calculateRowTotal(this)"></td>
+								step="0.01" placeholder="0.00%" oninput="calculateRowTotal(this)"></td>
 							<td><input type="number" name="itemSGST[]" class="itemSGST"
-								step="0.01" placeholder="9" onchange="calculateRowTotal(this)"></td>
+								step="0.01" placeholder="0.00%" oninput="calculateRowTotal(this)"></td>
 							<td><input type="number" name="itemTotal[]"
-								class="itemTotal" step="0.01" placeholder="0.00" readonly></td>
+								class="itemTotal" step="0.00" placeholder="0.00" readonly></td>
 							<td class="action-cell">
 								<button type="button" class="row-btn" onclick="addRow(this)">Add</button>
 								<button type="button" class="row-btn" onclick="editRow(this)">Edit</button>
@@ -719,10 +734,10 @@ document.getElementById("verifyForm").addEventListener("submit", function (e) {
 // Skip invoice
 
 /* ✅ Skip enable/disable */
-function toggleSkipBtn() {
+function toggleSkipbtn() {
     const chk = document.getElementById("imgNotClearChk");
-    const skipBtn = document.getElementById("skipBtn");
-    skipBtn.disabled = !chk.checked;
+    const Skipbtn = document.getElementById("Skipbtn");
+    Skipbtn.disabled = !chk.checked;
 
 }
 
@@ -819,6 +834,13 @@ document.addEventListener("DOMContentLoaded", function() {
     startTimer(); 
 });
   // ❌ functions not defined yet
+
+window.addEventListener("beforeunload", function () {
+
+    navigator.sendBeacon(
+        "<%=request.getContextPath()%>/autoRelease"
+    );
+});
 
 </script>
 

@@ -1,3 +1,4 @@
+<%@ page import="java.sql.Connection,java.sql.PreparedStatement,java.sql.ResultSet" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,11 +44,13 @@ body {
 	color: #1e40af;
 	font-weight: 600;
 }
+
 .header-right {
-    display: flex;
-    align-items: center;
-    gap: 30px;
+	display: flex;
+	align-items: center;
+	gap: 30px;
 }
+
 .logout {
 	background: #2563eb;
 	color: #fff;
@@ -201,12 +204,12 @@ input:disabled {
 	font-weight: 600;
 	cursor: not-allowed;
 }
-.timer {
-    font-weight: 600;
-    font-size: 15px;
-    color: #2563eb;
-}
 
+.timer {
+	font-weight: 600;
+	font-size: 15px;
+	color: #2563eb;
+}
 
 .checkbox-group {
 	display: flex;
@@ -225,6 +228,138 @@ input:disabled {
 	color: #475569;
 	font-weight: 600;
 	cursor: not-allowed;
+} /* ===== Skip Modal Design ===== */
+.skip-overlay {
+	display: none;
+	position: fixed;
+	inset: 0;
+	background: rgba(15, 23, 42, 0.55);
+	backdrop-filter: blur(4px);
+	z-index: 9999;
+	align-items: center;
+	justify-content: center;
+}
+
+.skip-card {
+	width: 380px;
+	background: #ffffff;
+	border-radius: 14px;
+	box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+	overflow: hidden;
+	animation: pop 0.25s ease-out;
+}
+
+@
+keyframes pop {from { transform:scale(0.9);
+	opacity: 0;
+}
+
+to {
+	transform: scale(1);
+	opacity: 1;
+}
+
+}
+.skip-header {
+	background: #2563eb;
+	color: #fff;
+	padding: 14px 18px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.skip-header h3 {
+	margin: 0;
+	font-size: 16px;
+}
+
+.skip-close {
+	cursor: pointer;
+	font-size: 22px;
+	line-height: 1;
+}
+
+.skip-body {
+	padding: 20px;
+}
+
+.skip-body .form-group {
+	margin-bottom: 16px;
+}
+
+.skip-body input {
+	width: 100%;
+	padding: 10px;
+	border-radius: 8px;
+	border: 1px solid #c7d2fe;
+}
+
+.skip-footer {
+	padding: 16px 20px;
+	display: flex;
+	gap: 12px;
+}
+
+.skip-footer button {
+	flex: 1;
+	padding: 10px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.btn-confirm {
+	background: #2563eb;
+	color: #fff;
+}
+
+.btn-confirm:hover {
+	background: #1e40af;
+}
+
+.btn-cancel {
+	background: #e5e7eb;
+	color: #334155;
+}
+
+.btn-cancel:hover {
+	background: #cbd5f5;
+}
+
+.skip-error {
+	color: #dc2626;
+	font-size: 13px;
+	display: none;
+}
+
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button
+	{
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+input[type=number] {
+	-moz-appearance: textfield;
+}
+
+.success-msg {
+	background: #d4edda;
+	color: #155724;
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 15px;
+	border: 1px solid #c3e6cb;
+}
+
+.error-msg {
+	background: #f8d7da;
+	color: #721c24;
+	padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 15px;
+	border: 1px solid #f5c6cb;
 }
 </style>
 </head>
@@ -232,211 +367,289 @@ input:disabled {
 <body>
 
 
-	<%
-	HttpSession session1 = request.getSession();
-
-	String vendorname = session1 != null && session1.getAttribute("vendorname") != null
-			? session1.getAttribute("vendorname").toString()
-			: "";
-	String invoiceno = session1 != null && session1.getAttribute("invoicenumber") != null
-			? session1.getAttribute("invoicenumber").toString()
-			: "";
-	String issuedate = session1 != null && session1.getAttribute("invoiceissuedate") != null
-			? session1.getAttribute("invoiceissuedate").toString()
-			: "";
-	String pono = session1 != null && session1.getAttribute("poNo") != null ? session1.getAttribute("poNo").toString() : "";
-	String total = session1 != null && session1.getAttribute("total") != null
-			? session1.getAttribute("total").toString()
-			: "";
-	String imagePath = session1 != null && session1.getAttribute("imagePath") != null
-			? session1.getAttribute("imagePath").toString()
-			: "";
-
-	String itemno = session1 != null && session1.getAttribute("itemno") != null
-			? session1.getAttribute("itemno").toString()
-			: "";
-	String itemname = session1 != null && session1.getAttribute("itemname") != null
-			? session1.getAttribute("itemname").toString()
-			: "";
-	String quantity = session1 != null && session1.getAttribute("quantity") != null
-			? session1.getAttribute("quantity").toString()
-			: "";
-	String price = session1 != null && session1.getAttribute("price") != null
-			? session1.getAttribute("price").toString()
-			: "";
-	String cgst = session1 != null && session1.getAttribute("cgst") != null ? session1.getAttribute("cgst").toString() : "";
-	String sgst = session1 != null && session1.getAttribute("sgst") != null ? session1.getAttribute("sgst").toString() : "";
-	String itemtotal = session1 != null && session1.getAttribute("itemtotal") != null
-			? session1.getAttribute("itemtotal").toString()
-			: "";
-	%>
-
-
-
-		<div class="header">
-			<div class="logo">
-				<img src="<%= request.getContextPath() %>/images/dreams-soft-logo.jpeg">
-				<strong>Dreams Soft Solutions</strong>
-			</div>
-			<div class="header-right">
-       			 <div class="timer" id="timer">Time: --</div>
-      			  <div class="user-info">Welcome, <strong><%= session.getAttribute("username") %></strong></div>
-     		   <a href="logout"><button class="logout">Logout</button></a>
-    			</div>
+	<div class="header">
+		<div class="logo">
+			<img src="<%=request.getContextPath()%>/images/dreams-soft-logo.jpeg">
+			<strong>Dreams Soft Solutions</strong>
 		</div>
+		<div class="header-right">
+			<div class="timer" id="timer">Time: --</div>
+			<div class="user-info">
+				Welcome, <strong><%=session.getAttribute("username")%></strong>
+			</div>
+			<a href="logout"><button class="logout">Logout</button></a>
+		</div>
+	</div>
 
-		<div class="main">
-    <% 
-        // Show messages
-        String success = request.getParameter("success");
-        String error = request.getParameter("error");
-        
-        if (success != null) {
-    %>
-        <div class="success-msg">
-            <%= success %>
-        </div>
-    <% 
-        }
-        if (error != null) {
-    %>
-        <div class="error-msg">
-            <%= error %>
-        </div>
-    <% 
-        }
-    %>
-    
-    <% 
-        String username = (String) session.getAttribute("username");
-       // String imagePath = null;
-        Integer imageId = null;
-        String timeTaken = "0.00";
-        if (username == null) {
-            response.sendRedirect("login.jsp");
-            return;
-        }
-        
-        try {
-            com.db.Dbconnection db = new com.db.Dbconnection();
-            java.sql.Connection conn = db.getConnection();
-            
-            // Get image for user
-            String sql = "SELECT image_id, image_path FROM invoice_images WHERE assigned_to_user = ? AND status = 'in_progress' LIMIT 1";
-            java.sql.PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, username);
-            java.sql.ResultSet rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                imageId = rs.getInt("image_id");
-                imagePath = rs.getString("image_path");
-                int totalSeconds = rs.getInt("verify_duration_seconds");
-                if (rs.wasNull()) {
-                    totalSeconds = 0;
-                }
+	<div class="main">
+		<%
+		// Show messages
+		String success = request.getParameter("success");
+		String error = request.getParameter("error");
 
-                int minutes = totalSeconds / 60;
-                int secondsLeft = totalSeconds % 60;
+		if (success != null) {
+		%>
+		<div class="success-msg">
+			<%=success%>
+		</div>
+		<%
+		}
+		if (error != null) {
+		%>
+		<div class="error-msg">
+			<%=error%>
+		</div>
+		<%
+		}
+		%>
 
-                timeTaken = minutes + "." + String.format("%02d", secondsLeft);
-            } else {
-                // Assign new image
-                String assignSql = "SELECT image_id, image_path FROM invoice_images WHERE status = 'pending' LIMIT 1";
-                java.sql.Statement stmt = conn.createStatement();
-                java.sql.ResultSet assignRs = stmt.executeQuery(assignSql);
-                
-                if (assignRs.next()) {
-                    imageId = assignRs.getInt("image_id");
-                    imagePath = assignRs.getString("image_path");
-                    
-                    // Assign to user
-                    String updateSql = "UPDATE invoice_images SET assigned_to_user = ?, status = 'in_progress', verify_start_time = NOW() WHERE image_id = ?";
-                    java.sql.PreparedStatement updatePs = conn.prepareStatement(updateSql);
-                    updatePs.setString(1, username);
-                    updatePs.setInt(2, imageId);
-                    updatePs.executeUpdate();
-                    updatePs.close();
-                }
-                assignRs.close();
-                stmt.close();
-            }
-            rs.close();
-            ps.close();
-            conn.close();
-            
-        } catch (Exception e) {
-            out.println("<div class='error-msg'>Error: " + e.getMessage() + "</div>");
+<%
+String user = (String) session.getAttribute("username");
+String mode = (String) session.getAttribute("mode");
+
+/* ❌ Not logged in */
+if (user == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+
+/* ❌ Trying to access QC directly */
+if (!"qc".equals(mode)) {
+    response.sendRedirect("home.jsp?error=Unauthorized+QC+access");
+    return;
+}
+%>
+
+<%
+String qcUser = (String) session.getAttribute("username");
+
+Integer imageId = null;
+String imagePath = null;
+String vcStatus = null;
+
+
+String[] itemNo = null;
+String[] itemName = null;
+String[] qty = null;
+String[] price = null;
+String[] cgst = null;
+String[] sgst = null;
+String[] total = null;
+
+
+
+java.util.List<com.model.InvoiceDetailsModel> qcItems = new java.util.ArrayList<>();
+
+if (qcUser == null) {
+    response.sendRedirect("login.jsp");
+    return;
+}
+
+try {
+    com.db.Dbconnection db = new com.db.Dbconnection();
+    java.sql.Connection con = db.getConnection();
+
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    /* =====================================================
+       1️⃣ LOAD ALREADY ASSIGNED QC IMAGE (REFRESH SAFE)
+       ===================================================== */
+    ps = con.prepareStatement(
+        "SELECT image_id, image_path, status FROM invoice_images " +
+        "WHERE assigned_to_qc = ? AND status = 'qc_in_progress' LIMIT 1");
+    ps.setString(1, qcUser);
+    rs = ps.executeQuery();
+
+    if (rs.next()) {
+        imageId = rs.getInt("image_id");
+        imagePath = rs.getString("image_path");
+        vcStatus = rs.getString("status");
+
+    }
+
+    rs.close();
+    ps.close();
+
+    /* =====================================================
+       2️⃣ IF NONE ASSIGNED → FETCH NEW COMPLETED IMAGE
+       ===================================================== */
+    if (imageId == null) {
+        ps = con.prepareStatement(
+            "SELECT image_id, image_path, status FROM invoice_images " +
+            "WHERE status IN ('completed', 'skipped') AND assigned_to_qc IS NULL " +
+            "ORDER BY verify_end_time LIMIT 1");
+        rs = ps.executeQuery();
+
+        if (rs.next()) {
+            imageId = rs.getInt("image_id");
+            imagePath = rs.getString("image_path");
+            vcStatus = rs.getString("status");
+
+            PreparedStatement ups = con.prepareStatement(
+                "UPDATE invoice_images SET assigned_to_qc=?, status='qc_in_progress' " +
+                "WHERE image_id=? AND assigned_to_qc IS NULL");
+            ups.setString(1, qcUser);
+            ups.setInt(2, imageId);
+            ups.executeUpdate();
+            ups.close();
         }
-        
+
+        rs.close();
+        ps.close();
+    }
+
+    /* =====================================================
+       3️⃣ LOAD ITEMS ONLY IF IMAGE EXISTS
+       ===================================================== */
+   
+       if (imageId != null) {
+           ps = con.prepareStatement(
+               "SELECT item_no, item_name, quantity, price, cgst, sgst, item_total " +
+               "FROM invoice_details WHERE image_id=? LIMIT 1"
+           );
+           ps.setInt(1, imageId);
+           rs = ps.executeQuery();
+
+           if (rs.next()) {
+               itemNo   = rs.getString("item_no").split(",");
+               itemName = rs.getString("item_name").split(",");
+               qty      = rs.getString("quantity").split(",");
+               price    = rs.getString("price").split(",");
+               cgst     = rs.getString("cgst").split(",");
+               sgst     = rs.getString("sgst").split(",");
+               total    = rs.getString("item_total").split(",");
+           }
+
+           rs.close();
+           ps.close();
+       }
+
+
+    con.close();
+
+    session.setAttribute("imageId", imageId);
+    session.setAttribute("imagePath", imagePath);
+    session.setAttribute("qcItems", qcItems);
+    session.setAttribute("vcStatus", vcStatus);
+
+
+} catch (Exception e) {
+    out.println("<div class='error-msg'>Error: " + e.getMessage() + "</div>");
+}
+
         if (imagePath == null) {
     %>
-    <div style="text-align: center; padding: 50px;">
-        <h2>No invoices to process</h2>
-        <p>All invoices have been processed.</p>
-        <p><a href="login.jsp">go to login</a></p>
-    </div>
-    <%
+		<div style="text-align: center; padding: 50px;">
+			<h2>No invoices to process</h2>
+			<p>All invoices have been processed.</p>
+			<p>click on logout</p>
+		</div>
+		<%
             return;
         }
     %>
-    
-		<form id="invoiceForm">
-		        <input type="hidden" name="imageId" value="<%= imageId %>">
-			<div class="top-section">
 
-				<div class="form-box" id="">
+		<form id="invoiceForm" method="post" action="QcSubmitServlet">
+	<input type="hidden" name="imageId" value="<%= imageId %>">
+	<input type="hidden" name="actionType" id="actionType">
+<input type="hidden" name="tlUsername" id="tlUsername">
+<input type="hidden" name="tlPassword" id="tlPassword">
+<input type="hidden" name="skipReasonHidden" id="skipReasonHidden">
+	
+			<div class="top-section">
+			<div class="form-box" id="">
 					<h3>QC Invoice Details</h3>
 					<div class="form-group">
-						<label>Vendor Name</label><input type="text" class="freeze-field"
-							required>
-					</div>
-					<div class="form-group">
-						<label>Invoice Number</label><input type="text"
-							class="freeze-field" required>
-					</div>
-					<div class="form-group">
-						<label>Invoice Issue Date</label><input type="text"
-							class="freeze-field" required>
-					</div>
-					<div class="form-group">
-						<label>P.O.#</label><input type="text" class="freeze-field"
-							required>
-					</div>
-					<div class="form-group">
-						<label>Invoice Total</label><input type="text"
-							class="freeze-field" required>
-					</div>
-					<div class="checkbox-group">
-						<input type="checkbox" id="imgNotClearChk"
-							onclick="toggleSkipBtn()"> Image is not clear <label
-							style="font-size: 14px;"> </label>
+						<label>Vendor Name</label>
+						<input type="text" name="vendorName" class="freeze-field" required>
 
+					</div>
+					<div class="form-group">
+						<label>Invoice Number</label>
+						<input type="text" name="invoiceNumber" class="freeze-field" required>
+					</div>
+					<div class="form-group">
+						<label>Invoice Issue Date</label>
+						<input type="text" name="invoiceDate" class="freeze-field" required>
+					</div>
+					<div class="form-group">
+						<label>P.O.#</label>
+						<input type="text" name="poNumber" class="freeze-field" required>
+					</div>
+					<div class="form-group">
+						<label>Invoice Total(&#8377;)</label><input type="text"
+							name="invoiceTotal" class="freeze-field" required>
+					</div>
+					<div style="margin-top: 10px;">
+						<input type="checkbox" id="imgNotClearChk"
+							onclick="toggleSkipbtn()"> <label for="imgNotClearChk"
+							style="font-size: 13px; font-weight: 600;">Please select "Image is not clear" before skipping.</label>
+					
 					</div>
 					<div class="footer-actions">
 						<button class="action-btn" type="button" onclick="edit(this)">Save</button>
-				        <button class="action-btn" type="button" id="skipBtn" disabled onclick="openSkipModal()">Skip</button>
-						<button class="action-btn" type="submit" onclick="submitform()">Submit</button>
+						<button class="action-btn" type="button" id="Skipbtn"onclick="openSkipModal()">Skip</button>
+						<button type="submit" class="action-btn">Submit</button>
 					</div>
 
 				</div>
 
 				<div class="image-box">
-					<%
-					if (!imagePath.equals("")) {
-					%>
-					<img id="invoiceImage" src="<%=request.getContextPath()%>"
-						class="invoice-img">
-					<%
-					} else {
-					%>
-					<h3>No Image Found</h3>
-					<%
-					}
-					%>
+					<img id="invoiceImage"
+     src="<%=request.getContextPath()%>/invoice_images/<%= imagePath %>"
+     class="invoice-img">
+					
+					
 					<div class="zoom-controls">
 						<button class="zoom-btn" type="button" onclick="zoomIn()">+</button>
 						<button class="zoom-btn" type="button" onclick="zoomOut()">&#8722;</button>
 					</div>
+					<div style="
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+">
+
+    <span style="
+        background: rgba(37, 99, 235, 0.9);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+    ">
+        Invoice ID: <%= imageId %>
+    </span>
+
+    <% if ("completed".equals(vcStatus)) { %>
+        <span style="
+            background: #16a34a;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+        ">
+            VC COMPLETED
+        </span>
+    <% } else if ("skipped".equals(vcStatus)) { %>
+        <span style="
+            background: #dc2626;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+        ">
+            VC SKIPPED
+        </span>
+    <% } %>
+
+</div>
+
 				</div>
 
 			</div>
@@ -447,82 +660,110 @@ input:disabled {
 						<th>Item No</th>
 						<th>Item Name</th>
 						<th>Quantity</th>
-						<th>Price</th>
+						<th>Price(&#8377;)</th>
 						<th>CGST (%)</th>
 						<th>SGST (%)</th>
-						<th>Total</th>
+						<th>Total(&#8377;)</th>
 						<th>Action</th>
 					</tr>
-					<tr class="item-row">
-						<td><input class="itemNo" type="number" placeholder="001"
-							value="<%=itemno%>" disabled></td>
-						<td><input class="itemName" type="text"
-							placeholder="Item Description" value="<%=itemname%>" disabled></td>
-						<td><input class="quantity" type="number" placeholder="00"
-							value="<%=quantity%>" oninput="calculateRowTotal(this)" disabled></td>
-						<td><input class="price" type="number" placeholder="0.00"
-							value="<%=price%>" oninput="calculateRowTotal(this)" disabled></td>
-						<td><input class="itemCGST" type="number" placeholder="0.00%"
-							value="<%=cgst%>" oninput="calculateRowTotal(this)" disabled></td>
-						<td><input class="itemSGST" type="number" placeholder="0.00%"
-							value="<%=sgst%>" oninput="calculateRowTotal(this)" disabled></td>
-						<td><input class="itemTotal" type="number" placeholder="0.00"
-							value="<%=itemtotal%>" disabled></td>
-						<td>
-							<button type="button" class="row-btn" onclick="addRow(this)">Add</button>
-							<button type="button" class="row-btn" onclick="editRow(this)">Edit</button>
-							<button type="button" class="row-btn" onclick="deleteRow(this)">Delete</button>
-						</td>
-					</tr>
+<%
+if (itemName != null) {
+    for (int i = 0; i < itemName.length; i++) {
+%>
+
+    <!-- EXISTING ROW (UNCHANGED) -->
+    <tr class="item-row">
+        <td><input class="itemNo" type="number" name="itemNo[]" value="<%= itemNo[i] %>"disabled></td>
+        <td><input class="itemName" type="text" name="itemName[]" value="<%= itemName[i] %>"disabled></td>
+        <td><input class="quantity" type="number" name="quantity[]" value="<%= qty[i] %>" oninput="calculateRowTotal(this)" disabled></td>
+        <td><input class="price" type="number" name="itemPrice[]" value="<%= price[i]%>" oninput="calculateRowTotal(this)" disabled></td>
+        <td><input class="itemCGST" type="number" name="itemCGST[]" value="<%=cgst[i]%>" oninput="calculateRowTotal(this)" disabled></td>
+        <td><input class="itemSGST" type="number" name="itemSGST[]" value="<%= sgst[i]%>" oninput="calculateRowTotal(this)" disabled></td>
+        <td><input class="itemTotal" type="number" name="itemTotal[]" value="<%=total[i] %>" readonly disabled></td>
+        <td>
+            <button type="button" class="row-btn" onclick="addRow(this)">Add</button>
+            <button type="button" class="row-btn" onclick="editRow(this)">Edit</button>
+            <button type="button" class="row-btn" onclick="deleteRow(this)">Delete</button>
+        </td>
+    </tr>
+ 
+<%
+    }
+} else {
+%>
+
+    <!-- ✅ DEFAULT EMPTY ROW FOR QC -->
+    <tr class="item-row">
+        <td><input class="itemNo" type="number" name="itemNo[]" placeholder="001"></td>
+        <td><input class="itemName" type="text" name="itemName[]" placeholder="Item Description"></td>
+        <td><input class="quantity" type="number" name="quantity[]" placeholder="0" oninput="calculateRowTotal(this)"></td>
+        <td><input class="price" type="number" name="itemPrice[]" placeholder="0.00" oninput="calculateRowTotal(this)"></td>
+        <td><input class="itemCGST" type="number" name="itemCGST[]" placeholder="0" oninput="calculateRowTotal(this)"></td>
+        <td><input class="itemSGST" type="number" name="itemSGST[]" placeholder="0" oninput="calculateRowTotal(this)"></td>
+        <td><input class="itemTotal" type="number" name="itemTotal[]" readonly></td>
+        <td>
+            <button type="button" class="row-btn" onclick="addRow(this)">Add</button>
+            <button type="button" class="row-btn" onclick="editRow(this)">Edit</button>
+            <button type="button" class="row-btn" onclick="deleteRow(this)">Delete</button>
+        </td>
+    </tr>
+<%
+}
+%>
+
 					<tr id="subTotalRow">
 						<td colspan="6" style="text-align: right; font-weight: 600;">Sub
 							Total</td>
-						<td><input id="subTotal" readonly></td>
+						<td><input id="subTotal" name="subTotal" readonly></td>
 						<td></td>
 					</tr>
-
+              
 				</table>
 			</div>
+	</div>
+	<div id="skipModal" class="skip-overlay">
 
-		</div>
-		<!-- Skip Login Modal -->
-<div id="skipModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-     background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:9999;">
+		<div class="skip-card">
 
-    <div style="background:#fff; padding:25px; width:360px; border-radius:12px; position:relative;">
+			<div class="skip-header">
+				<h3>Skip Authentication</h3>
+				<span class="skip-close" onclick="closeSkipModal()">&times;</span>
+			</div>
 
-        <!-- ❌ Close Button -->
-        <span onclick="closeSkipModal()"
-              style="position:absolute; top:12px; right:15px;
-                     font-size:22px; cursor:pointer; color:#64748b;">
-            &times;
-        </span>
+			<div class="skip-body">
+			<div class="form-group">
+    <label>Reason for Skip</label>
+    <textarea id="skipReason"
+              rows="3"
+              placeholder="Enter reason after TL approval"
+              disabled
+              style="width:100%;padding:10px;border-radius:8px;border:1px solid #c7d2fe;"></textarea>
+</div>
+			
+				<div class="form-group">
+					<label>Username</label> <input type="text" id="skipUsername"
+						placeholder="Enter username">
+				</div>
 
-        <h3 style="margin-top:0;">Skip Authentication</h3>
+				<div class="form-group">
+					<label>Password</label> <input type="password" id="skipPassword"
+						placeholder="Enter password">
+				</div>
 
-        <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="skipUsername" placeholder="Enter username" value="dreams">
-        </div>
-
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="skipPassword" placeholder="Enter password" value="dreams">
-        </div>
-
-        <p id="skipError" style="color:red; font-size:13px; display:none;">
-            Invalid username or password
-        </p>
-
-        <div style="display:flex; gap:12px; margin-top:18px;">
-            <button type="button" class="action-btn" onclick="validateSkip()">Confirm</button>
-            <button type="button" class="action-btn" onclick="closeSkipModal()">Cancel</button>
-        </div>
-    </div>
-    
+				<div id="skipError" class="skip-error">Invalid username or
+					password</div>
+			</div>
+<div class="skip-footer">
+   <button class="btn-confirm" type="button" id="confirmSkipBtn" onclick="validateSkip()">
+    Confirm Skip
+</button>
+ <button class="btn-cancel" type="button" onclick="closeSkipModal()">
+        Cancel
+    </button>
 </div>
 
-
+		</div>
+	</div>
 	</form>
 
 	<script>
@@ -653,17 +894,19 @@ input:disabled {
 	    }
 	}
 
-	function toggleSkipBtn() {
+	function toggleSkipbtn() {
 	    var chk = document.getElementById("imgNotClearChk");
-	    var skipBtn = document.getElementById("skipBtn");
-	    skipBtn.disabled = !chk.checked;
+	    var Skipbtn = document.getElementById("Skipbtn");
+	    Skipbtn.disabled = !chk.checked;
 	}
-
-	function skip() {
-		alert("skipped");
-	}
-
 	function openSkipModal() {
+		const chk = document.getElementById("imgNotClearChk");
+
+	    if (!chk.checked) {
+	        alert("Please click on the 'Image is not clear' checkbox before skipping.");
+	        return;
+	    }
+
 	    document.getElementById("skipModal").style.display = "flex";
 	}
 
@@ -673,24 +916,66 @@ input:disabled {
 	    document.getElementById("skipPassword").value = "";
 	    document.getElementById("skipError").style.display = "none";
 	}
-
 	function validateSkip() {
 	    const user = document.getElementById("skipUsername").value.trim();
 	    const pass = document.getElementById("skipPassword").value.trim();
+	    const reasonBox = document.getElementById("skipReason");
+	    const err = document.getElementById("skipError");
+	    const btn = document.getElementById("confirmSkipBtn");
 
+	    if (!user || !pass) {
+	        err.innerText = "Enter TL credentials";
+	        err.style.display = "block";
+	        return;
+	    }
+
+	    // ✅ STATIC TL CHECK
 	    if (user === "dreams" && pass === "dreams") {
-	        closeSkipModal();
-	        alert("Skip authorized successfully");
+	        err.style.display = "none";
+
+	        // 🔓 enable reason
+	        reasonBox.disabled = false;
+	        reasonBox.focus();
+
+	        // 🔁 CHANGE BUTTON ACTION
+	        btn.onclick = confirmQcSkip;
+
+	        alert("TL authenticated. Please enter reason.");
 	    } else {
-	        document.getElementById("skipError").style.display = "block";
+	        err.innerText = "Invalid TL credentials";
+	        err.style.display = "block";
 	    }
 	}
+	function confirmQcSkip() {
+
+	    const reason = document.getElementById("skipReason").value.trim();
+	    const user = document.getElementById("skipUsername").value.trim();
+	    const pass = document.getElementById("skipPassword").value.trim();
+
+	    if (!reason) {
+	        alert("Reason is mandatory for QC Skip");
+	        return;
+	    }
+
+	    // hidden fields
+	    document.getElementById("actionType").value = "qcSkip";
+	    document.getElementById("tlUsername").value = user;
+	    document.getElementById("tlPassword").value = pass;
+	    document.getElementById("skipReasonHidden").value = reason;
+
+	    // 🔥 CHANGE ACTION TO QC SKIP SERVLET
+	    const form = document.getElementById("invoiceForm");
+	    form.action = "QcSkipServlet";
+	    form.submit();
+	}
+
 
 	/* =====================================================
 	   SUBMIT VALIDATION (DATE + TOTAL CHECK)
 	   ===================================================== */
 	document.getElementById("invoiceForm").addEventListener("submit", function (e) {
 
+		 document.getElementById("actionType").value = "submit";
 	    // enable disabled inputs before submit
 	    this.querySelectorAll("input:disabled").forEach(i => i.disabled = false);
 
@@ -758,6 +1043,6 @@ input:disabled {
 	    // ✅ All validations passed → submit allowed
 	});
 </script>
-	
+
 </body>
 </html>

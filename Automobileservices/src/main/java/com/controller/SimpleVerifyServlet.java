@@ -119,7 +119,9 @@ public class SimpleVerifyServlet extends HttpServlet {
                     ps.setInt(2, imgId);
                     ps.executeUpdate();
                 }
-
+                
+                HttpSession session = request.getSession();
+                session.removeAttribute("mode");   // 🔓 RELEASE VC LOCK
                 response.sendRedirect("verify_invoice_ui.jsp?success=Invoice+submitted+successfully");
 
             } else if ("skip".equals(action)) {
@@ -128,22 +130,25 @@ public class SimpleVerifyServlet extends HttpServlet {
                 String sql =
                     "UPDATE invoice_images SET " +
                     "status = 'skipped', " +
-                    "errors = ?, " +
+                    " verified_by = ?, " +
+                    "verify_reason = ?, " +
                     "verify_end_time = NOW(), " +
                     "verify_duration_mmss = CONCAT(" +
                     "FLOOR(TIMESTAMPDIFF(SECOND, verify_start_time, NOW()) / 60), '.', " +
                     "LPAD(MOD(TIMESTAMPDIFF(SECOND, verify_start_time, NOW()), 60), 2, '0')" +
                     "), " +
-                    "assigned_to_user = ? " +
+                    "assigned_to_user = NULL " +
                     "WHERE image_id = ?";
 
                 PreparedStatement ps = conn.prepareStatement(sql);
-                ps.setString(1, "Skipped: " + (reason != null ? reason : "No reason"));
-                ps.setString(2, username);
+                ps.setString(1, username);
+                ps.setString(2, "Skipped: " + (reason != null ? reason : "No reason"));
                 ps.setInt(3, imgId);
                 ps.executeUpdate();
                 ps.close();
-
+                
+                HttpSession session = request.getSession();
+                session.removeAttribute("mode");   // 🔓 RELEASE VC LOCK
                 response.sendRedirect("verify_invoice_ui.jsp");
 
             } else if ("hold".equals(action)) {
@@ -152,7 +157,7 @@ public class SimpleVerifyServlet extends HttpServlet {
                 String sql =
                     "UPDATE invoice_images SET " +
                     "status = 'hold', " +
-                    "errors = ?, " +
+                    " verified_by = ?, " +
                     "verify_end_time = NOW(), " +
                     "verify_duration_mmss = CONCAT(" +
                     "FLOOR(TIMESTAMPDIFF(SECOND, verify_start_time, NOW()) / 60), '.', " +
@@ -165,7 +170,9 @@ public class SimpleVerifyServlet extends HttpServlet {
                 ps.setInt(2, imgId);
                 ps.executeUpdate();
                 ps.close();
-
+                
+                HttpSession session = request.getSession();
+                session.removeAttribute("mode");   // 🔓 RELEASE VC LOCK
                 response.sendRedirect("verify_invoice_ui.jsp");
             }
 

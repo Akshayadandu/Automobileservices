@@ -1,10 +1,13 @@
 package com.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.dao.Userdao;
 import com.model.Usermodel;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,7 +26,14 @@ public class Loginservlet extends HttpServlet {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        ServletContext context = getServletContext();
+        Map<String, String> activeUsers =
+            (Map<String, String>) context.getAttribute("activeUsers");
 
+        if (activeUsers == null) {
+            activeUsers = new HashMap<>();
+            context.setAttribute("activeUsers", activeUsers);
+        }
         /* ===== ADMIN LOGIN ===== */
         if (ADMIN_USERNAME.equals(username) && ADMIN_PASSWORD.equals(password)) {
 
@@ -34,6 +44,8 @@ public class Loginservlet extends HttpServlet {
             return;
         }
 
+       
+
         /* ===== NORMAL USER LOGIN ===== */
         Usermodel user = new Usermodel();
         user.setusername(username);
@@ -41,16 +53,34 @@ public class Loginservlet extends HttpServlet {
 
         Userdao dao = new Userdao();
         Usermodel validUser = dao.valid(user);
-
+        
         if (validUser != null) {
+        	HttpSession oldSession = request.getSession(false);
+        	if (oldSession != null && oldSession.getAttribute("username") == null) {
+        	    oldSession.invalidate();
+        	}
 
-            HttpSession session = request.getSession();
-            session.setAttribute("username", validUser.getusername());
+        	HttpSession currentSession = request.getSession();
+        	String oldSessionId = activeUsers.get(username);
 
-            response.sendRedirect("verify_invoice_ui.jsp?success=1");
+        	if (oldSessionId != null && !oldSessionId.equals(currentSession.getId())) {
+        	    activeUsers.remove(username);
+        	}
+
+        	if (activeUsers.containsKey(username)) {
+        	    response.sendRedirect("login.jsp?error=User+already+logged+in");
+        	    return;
+        	}
+
+        	HttpSession session = currentSession;
+        	session.setAttribute("username", validUser.getusername());
+        	session.setAttribute("mode", "verify");
+
+        	activeUsers.put(username, session.getId());
+        	response.sendRedirect("verify_invoice_ui.jsp?success=1");
 
         } else {
-            response.sendRedirect("login.jsp?error=1");
+        	response.sendRedirect("login.jsp?error=Invalid+username+or+password");
         }
     }
 }
