@@ -72,6 +72,7 @@ body {
 .top-section {
 	display: flex;
 	gap: 20px;
+	height: calc(100vh - 180px);
 }
 
 .form-box {
@@ -80,6 +81,7 @@ body {
 	padding: 22px;
 	border-radius: 12px;
 	box-shadow: 0 15px 30px rgba(37, 99, 235, 0.15);
+	overflow-y: auto;
 }
 
 .form-box h3 {
@@ -121,45 +123,129 @@ body {
 	cursor: pointer;
 }
 
+/* IMAGE BOX */
 .image-box {
 	width: 75%;
 	background: #ffffff;
 	border-radius: 12px;
 	box-shadow: 0 15px 30px rgba(37, 99, 235, 0.15);
 	position: relative;
-	overflow: hidden;
-	min-height: 340px;
 	display: flex;
-	align-items: center;
-	justify-content: center;
+	flex-direction: column;
+	overflow: visible;
 }
 
+/* IMAGE CONTAINER */
+.image-container {
+	flex: 1;
+	overflow: auto;
+	position: relative;
+	background: #f8fafc;
+	border: 2px dashed #cbd5e1;
+	border-radius: 8px;
+	margin: 10px;
+}
+
+/* INVOICE ID BADGE */
+.invoice-id-badge {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	background: rgba(37, 99, 235, 0.95);
+	color: #fff;
+	padding: 6px 10px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	z-index: 10;
+	width: fit-content;
+}
+
+/* IMAGE WRAPPER */
+.image-wrapper {
+	position: relative;
+	display: inline-block;
+	padding: 20px;
+}
+
+/* IMAGE STYLES */
 .invoice-img {
-	max-width: 90%;
-	max-height: 90%;
-	transition: transform 0.2s ease-in-out;
-	border: 1px solid #ddd;
+	display: block;
+	transform-origin: 0 0;
+	transition: transform 0.2s ease;
+	cursor: move;
+	user-select: none;
+	-webkit-user-drag: none;
+	max-width: none;
 }
 
+/* ZOOM CONTROLS */
 .zoom-controls {
 	position: absolute;
-	bottom: 20px;
-	left: 50%;
-	transform: translateX(-50%);
+	bottom: 18px;
+	right: 20px;
 	display: flex;
-	gap: 50px;
+	gap: 8px;
+	z-index: 50;
+	background: rgba(255, 255, 255, 0.95);
+	padding: 10px;
+	border-radius: 10px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	border: 1px solid #e2e8f0;
 }
 
 .zoom-btn {
-	width: 44px;
-	height: 44px;
-	border-radius: 50%;
+	width: 42px;
+	height: 42px;
+	border-radius: 8px;
 	background: #2563eb;
-	color: #ffffff;
-	font-size: 24px;
+	color: white;
+	font-size: 20px;
 	font-weight: bold;
 	border: none;
 	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+}
+
+.zoom-btn:hover:not(:disabled) {
+	background: #1d4ed8;
+	transform: translateY(-2px);
+}
+
+.zoom-btn:active {
+	transform: translateY(0);
+}
+
+.zoom-btn:disabled {
+	background: #94a3b8;
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.zoom-display {
+	display: flex;
+	align-items: center;
+	padding: 0 12px;
+	font-weight: 700;
+	color: #1e293b;
+	font-size: 15px;
+	min-width: 70px;
+	justify-content: center;
+	background: #f1f5f9;
+	border-radius: 6px;
+	border: 1px solid #cbd5e1;
+}
+
+/* DRAGGABLE IMAGE */
+.draggable {
+	cursor: grab;
+}
+
+.draggable:active {
+	cursor: grabbing;
 }
 
 .table-box {
@@ -195,7 +281,7 @@ td input {
 	border-radius: 4px;
 	border: 1px solid #c7d2fe;
 }
-/* ð Frozen input look */
+
 td input:disabled {
 	background-color: #e5e7eb;
 	color: #475569;
@@ -218,6 +304,7 @@ td input:disabled {
 	cursor: pointer;
 	font-size: 12px;
 }
+
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -231,9 +318,13 @@ input[type=number] {
 @media ( max-width : 1200px) {
 	.top-section {
 		flex-direction: column;
+		height: auto;
 	}
 	.form-box, .image-box {
 		width: 100%;
+	}
+	.image-box {
+		height: 500px;
 	}
 }
 
@@ -244,6 +335,15 @@ input[type=number] {
 	}
 	th, td {
 		font-size: 12px;
+	}
+	.zoom-controls {
+		bottom: 10px;
+		right: 10px;
+	}
+	.zoom-btn {
+		width: 35px;
+		height: 35px;
+		font-size: 16px;
 	}
 }
 
@@ -428,7 +528,6 @@ input[type=number] {
 
 
 					<div class="footer-actions">
-						<!-- ===== SKIP BUTTON (ONLY CHANGE: disabled REMOVED) ===== -->
 						<button class="action-btn" type="button" id="Skipbtn"
 							onclick="skipInvoice()">Skip</button>
 						<button type="button" class="action-btn" id="holdBtn"
@@ -440,26 +539,29 @@ input[type=number] {
 				</div>
 
 				<div class="image-box">
-					<img id="invoiceImage"
-						src="<%= request.getContextPath() %>/invoice_images/<%= imagePath %>"
-						class="invoice-img" alt="Invoice"
-						onerror="this.src='<%= request.getContextPath() %>/images/sample-invoice.png'">
-
-					<div class="zoom-controls">
-						<button type="button" class="zoom-btn" onclick="zoomIn()">+</button>
-						<button type="button" class="zoom-btn" onclick="zoomOut()">-</button>
+					<div class="image-container">
+						<div class="invoice-id-badge">
+							Invoice ID: <%= imageId %>
+						</div>
+						
+						<div class="image-wrapper">
+							<img id="invoiceImage"
+								src="<%= request.getContextPath() %>/invoice_images/<%= imagePath %>"
+								class="invoice-img draggable" alt="Invoice"
+								onerror="this.src='<%= request.getContextPath() %>/images/sample-invoice.png'">
+						</div>
 					</div>
-
-					<div
-						style="position: absolute; top: 10px; left: 10px; background: rgba(37, 99, 235, 0.9); color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px;">
-						Invoice ID:
-						<%= imageId %>
-					</div>
+							<div class="zoom-controls">
+						<button type="button" class="zoom-btn" id="zoomOutBtn" onclick="zoomOut()">-</button>
+						<div class="zoom-display" id="zoomLevelDisplay">25%</div>
+						<button type="button" class="zoom-btn" id="zoomInBtn" onclick="zoomIn()">+</button>
+					</div>	
 				</div>
 			</div>
 
 			<div class="table-box">
 				<table id="invoiceTable">
+			
 					<thead>
 						<tr>
 							<th>Item No</th>
@@ -509,27 +611,104 @@ input[type=number] {
 			</div>
 		</form>
 	</div>
-	<div id="toast"></div>
-	<script>
-let zoomLevel = 1;
 
+	<script>
+	// ========== ZOOM FUNCTIONALITY ==========
+	let zoomLevel = 1;
+	const MIN_ZOOM = 0.3;
+	const MAX_ZOOM = 3;
+
+	function zoomIn() {
+	    const img = document.getElementById("invoiceImage");
+	    if (!img) {
+	        alert("Image not found");
+	        return;
+	    }
+	    
+	    if (zoomLevel < MAX_ZOOM) {
+	        zoomLevel += 0.1;
+	        zoomLevel = Math.min(zoomLevel, MAX_ZOOM);
+	        img.style.transform = "scale(" + zoomLevel + ")";
+	        updateZoomDisplay();
+	        updateZoomButtons();
+	    }
+	}
+
+	function zoomOut() {
+	    const img = document.getElementById("invoiceImage");
+	    if (!img) {
+	        alert("Image not found");
+	        return;
+	    }
+	    
+	    if (zoomLevel > MIN_ZOOM) {
+	        zoomLevel -= 0.1;
+	        zoomLevel = Math.max(zoomLevel, MIN_ZOOM);
+	        img.style.transform = "scale(" + zoomLevel + ")";
+	        updateZoomDisplay();
+	        updateZoomButtons();
+	    }
+	}
+
+	function updateZoomDisplay() {
+	    const display = document.getElementById('zoomLevelDisplay');
+	    if (display) {
+	        display.textContent = Math.round(zoomLevel * 100) + '%';
+	    }
+	}
+
+	function updateZoomButtons() {
+	    const zoomInBtn = document.getElementById('zoomInBtn');
+	    const zoomOutBtn = document.getElementById('zoomOutBtn');
+	    
+	    if (zoomInBtn) {
+	        zoomInBtn.disabled = zoomLevel >= MAX_ZOOM;
+	        zoomInBtn.style.opacity = zoomLevel >= MAX_ZOOM ? '0.5' : '1';
+	    }
+	    
+	    if (zoomOutBtn) {
+	        zoomOutBtn.disabled = zoomLevel <= MIN_ZOOM;
+	        zoomOutBtn.style.opacity = zoomLevel <= MIN_ZOOM ? '0.5' : '1';
+	    }
+	}
+
+	// Mouse wheel zoom
+	function setupMouseWheelZoom() {
+	    const container = document.querySelector('.image-container');
+	    if (!container) return;
+	    
+	    container.addEventListener('wheel', function(e) {
+	        if (e.ctrlKey) {
+	            e.preventDefault();
+	            if (e.deltaY < 0) {
+	                zoomIn();
+	            } else {
+	                zoomOut();
+	            }
+	        }
+	    }, { passive: false });
+	}
+
+	// Initialize zoom
+	function initZoom() {
+	    updateZoomDisplay();
+	    updateZoomButtons();
+	    setupMouseWheelZoom();
+	}
+// ========== TIMER FUNCTIONS ==========
 let timerInterval = null;
 let startTime = null;
-let elapsedBeforeHold = 0; // in milliseconds
-let isOnHold = false; 
+let elapsedBeforeHold = 0;
+let isOnHold = false;
 
-// ===== START / RESUME TIMER =====
 function startTimer() {
     startTime = new Date();
-
     timerInterval = setInterval(function () {
         const now = new Date();
         const diff = elapsedBeforeHold + (now - startTime);
-
         const hours = Math.floor(diff / 3600000);
         const minutes = Math.floor((diff % 3600000) / 60000);
         const seconds = Math.floor((diff % 60000) / 1000);
-
         document.getElementById("timer").textContent =
             "Time: " +
             String(hours).padStart(2, "0") + ":" +
@@ -538,29 +717,16 @@ function startTimer() {
     }, 1000);
 }
 
-// ===== STOP / PAUSE TIMER =====
 function stopTimer() {
     clearInterval(timerInterval);
     elapsedBeforeHold += new Date() - startTime;
 }
 
-// Zoom functions
-function zoomIn() {
-    zoomLevel += 0.1;
-    document.getElementById("invoiceImage").style.transform = `scale(${zoomLevel})`;
-}
-
-function zoomOut() {
-    if (zoomLevel > 0.5) {
-        zoomLevel -= 0.1;
-        document.getElementById("invoiceImage").style.transform = `scale(${zoomLevel})`;
-    }
-}
-/* ===== ADD ROW ===== */
+// ========== TABLE FUNCTIONS ==========
 function addRow(btn) {
     const row = btn.closest(".item-row");
     const inputs = row.querySelectorAll("input");
-
+    
     for (let i of inputs) {
         if (!i.value.trim()) {
             alert("Fill all fields before adding.");
@@ -568,46 +734,41 @@ function addRow(btn) {
         }
         i.disabled = true;
     }
-
+    
     btn.disabled = true;
-
+    
     const newRow = row.cloneNode(true);
-    newRow.className = "item-row"; // â force class
-
+    newRow.className = "item-row";
+    
     newRow.querySelectorAll("input").forEach(i => {
         i.value = "";
         i.disabled = false;
     });
-
-    // â enable ALL buttons
+    
     newRow.querySelectorAll(".row-btn").forEach(b => b.disabled = false);
-
+    
     const table = document.getElementById("invoiceTable");
     const subtotalRow = document.getElementById("subtotalRow");
-
+    
     subtotalRow.remove();
     table.appendChild(newRow);
     table.appendChild(subtotalRow);
-
+    
     calculateSubTotal();
 }
 
 function deleteRow(button) {
     const row = button.closest("tr");
-
-    // Count delete buttons = item rows
-    const totalItemRows =
-        document.querySelectorAll(".row-btn[onclick^='deleteRow']").length;
-
+    const totalItemRows = document.querySelectorAll(".row-btn[onclick^='deleteRow']").length;
+    
     if (totalItemRows <= 1) {
         alert("At least one item row is required.");
         return;
     }
-
+    
     row.remove();
     calculateSubTotal();
-
-    // â RE-ENABLE Add button on the last remaining row
+    
     const rows = document.querySelectorAll("tr.item-row");
     rows.forEach(r => {
         const addBtn = r.querySelector("button[onclick^='addRow']");
@@ -615,11 +776,10 @@ function deleteRow(button) {
     });
 }
 
-/* ===== EDIT / SAVE ===== */
 function editRow(btn) {
     const row = btn.closest(".item-row");
     const inputs = row.querySelectorAll("input");
-
+    
     if (btn.innerText === "Edit") {
         inputs.forEach(i => i.disabled = false);
         btn.innerText = "Save";
@@ -632,7 +792,6 @@ function editRow(btn) {
     }
 }
 
-// Calculate row total
 function calculateRowTotal(input) {
     const row = input.closest("tr");
     const price = parseFloat(row.querySelector(".itemPrice").value) || 0;
@@ -643,12 +802,11 @@ function calculateRowTotal(input) {
     const baseAmount = price * quantity;
     const gstAmount = baseAmount * (cgst + sgst) / 100;
     const total = baseAmount + gstAmount;
-
+    
     row.querySelector(".itemTotal").value = total.toFixed(2);
     calculateSubTotal();
 }
 
-/* ===== SUBTOTAL ===== */
 function calculateSubTotal() {
     let sum = 0;
     document.querySelectorAll(".itemTotal").forEach(t => {
@@ -657,29 +815,27 @@ function calculateSubTotal() {
     });
     document.getElementById("subTotal").value = sum.toFixed(2);
 }
+
+// ========== FORM VALIDATION ==========
 document.getElementById("verifyForm").addEventListener("submit", function (e) {
 	const dateInput = document.getElementById("invoiceDate").value.trim();
-
-	// 1️⃣ Mandatory check
+	
 	if (!dateInput) {
 	    alert("Please enter Invoice Issue Date.");
 	    e.preventDefault();
 	    return;
 	}
-
-	// 2️⃣ Format check: dd-mm-yyyy
+	
 	const datePattern = /^(\d{2})-(\d{2})-(\d{4})$/;
 	if (!datePattern.test(dateInput)) {
 	    alert("Invoice Date must be in DD-MM-YYYY format.");
 	    e.preventDefault();
 	    return;
 	}
-
-	// 3️⃣ Convert to Date object
+	
 	const parts = dateInput.split("-");
 	const enteredDate = new Date(parts[2], parts[1] - 1, parts[0]);
-
-	// 4️⃣ Invalid date check (like 32-13-2025)
+	
 	if (
 	    enteredDate.getDate() != parts[0] ||
 	    enteredDate.getMonth() != parts[1] - 1 ||
@@ -689,159 +845,147 @@ document.getElementById("verifyForm").addEventListener("submit", function (e) {
 	    e.preventDefault();
 	    return;
 	}
-
-	// 5️⃣ Future date restriction
+	
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
-
+	
 	if (enteredDate > today) {
 	    alert("Invoice Date cannot be a future date.");
 	    e.preventDefault();
 	    return;
 	}
-
-
-    // enable disabled inputs first
+	
     this.querySelectorAll("input:disabled").forEach(i => i.disabled = false);
-
-    const invoiceTotal = parseFloat(
-        document.querySelector("input[name='invoiceTotal']").value
-    );
-
-    const subTotal = parseFloat(
-        document.getElementById("subTotal").value
-    );
-
+    
+    const invoiceTotal = parseFloat(document.querySelector("input[name='invoiceTotal']").value);
+    const subTotal = parseFloat(document.getElementById("subTotal").value);
+    
     if (isNaN(invoiceTotal) || isNaN(subTotal)) {
         alert("Invoice Total and Item totals are required.");
         e.preventDefault();
         return;
     }
-
+    
     if (invoiceTotal.toFixed(2) !== subTotal.toFixed(2)) {
         alert(
             "Invoice Total and Item Sub Total must match.\n\n" +
-            "Invoice Total: â¹" + invoiceTotal.toFixed(2) + "\n" +
-            "Items Total: â¹" + subTotal.toFixed(2)
+            "Invoice Total: ₹" + invoiceTotal.toFixed(2) + "\n" +
+            "Items Total: ₹" + subTotal.toFixed(2)
         );
         e.preventDefault();
         return;
     }
-
-    // â allow submit
 });
 
-// Skip invoice
-
-/* ✅ Skip enable/disable */
+// ========== SKIP INVOICE ==========
 function toggleSkipbtn() {
     const chk = document.getElementById("imgNotClearChk");
     const Skipbtn = document.getElementById("Skipbtn");
     Skipbtn.disabled = !chk.checked;
-
 }
 
-/* ✅ Skip action */
-/* ===== SKIP ACTION (UNCHANGED LOGIC, THIS SHOWS POPUP) ===== */
 function skipInvoice() {
-
     const chk = document.getElementById("imgNotClearChk");
-
+    
     if (!chk.checked) {
         alert("Please click on the 'Image is not clear' checkbox before skipping.");
         return;
     }
-
+    
     const reason = prompt("Reason for skipping this invoice:");
     if (reason === null) return;
-
+    
     const form = document.createElement("form");
     form.method = "post";
     form.action = "SimpleVerifyServlet";
-
+    
     const imgInput = document.createElement("input");
     imgInput.type = "hidden";
     imgInput.name = "imageId";
     imgInput.value = "<%= imageId %>";
     form.appendChild(imgInput);
-
+    
     const actionInput = document.createElement("input");
     actionInput.type = "hidden";
     actionInput.name = "actionStatus";
     actionInput.value = "skip";
     form.appendChild(actionInput);
-
+    
     const reasonInput = document.createElement("input");
     reasonInput.type = "hidden";
     reasonInput.name = "reason";
     reasonInput.value = reason;
     form.appendChild(reasonInput);
-
+    
     document.body.appendChild(form);
     form.submit();
 }
 
-/* ✅ TOP POPUP */
-function showTopPopup(message, subMessage, isError) {
-    const popup = document.getElementById("topPopup");
-    document.getElementById("topPopupMsg").textContent = message || "";
-    document.getElementById("topPopupSub").textContent = subMessage || "";
-
-    if (isError) popup.classList.add("error");
-    else popup.classList.remove("error");
-
-    popup.style.display = "block";
-    setTimeout(() => popup.style.display = "none", 2500);
-}
-
-// Hold invoice
-
-  function toggleHold() {
+// ========== HOLD FUNCTION ==========
+function toggleHold() {
     const holdBtn = document.getElementById("holdBtn");
     const inputs = document.querySelectorAll("input, select, textarea, button");
-
+    
     if (!isOnHold) {
-        // ===== HOLD =====
+        // HOLD
         stopTimer();
-
+        
         inputs.forEach(el => {
             if (el.id !== "holdBtn") {
                 el.disabled = true;
             }
         });
-
+        
         holdBtn.innerText = "Unhold";
-        holdBtn.style.background = "#16a34a"; // green
+        holdBtn.style.background = "#16a34a";
         isOnHold = true;
-
+        
     } else {
-       
+        // UNHOLD
         startTimer();
-
+        
         inputs.forEach(el => el.disabled = false);
-
+        
         holdBtn.innerText = "Hold";
-        holdBtn.style.background = "#2563eb"; // blue
+        holdBtn.style.background = "#2563eb";
         isOnHold = false;
     }
 }
-  
-   
-
-// Auto-calculate on load
+//========== INITIALIZATION ==========
 document.addEventListener("DOMContentLoaded", function() {
     calculateSubTotal();
-    startTimer(); 
+    startTimer();
+    
+    // Initialize zoom display and buttons
+    updateZoomDisplay();
+    updateZoomButtons();
+    
+    // Initialize zoom after image loads
+    const img = document.getElementById('invoiceImage');
+    if (img.complete) {
+        initZoom();
+    } else {
+        img.addEventListener('load', initZoom);
+    }
+    
+    // Auto-focus vendor name
+    setTimeout(() => {
+        const vendorName = document.getElementById("vendorName");
+        if (vendorName) vendorName.focus();
+    }, 100);
 });
-  // ❌ functions not defined yet
-
+// Auto release on unload
 window.addEventListener("beforeunload", function () {
-
-    navigator.sendBeacon(
-        "<%=request.getContextPath()%>/autoRelease"
-    );
+    navigator.sendBeacon("<%=request.getContextPath()%>/autoRelease");
 });
 
+// Debug function (remove in production)
+function debugZoom() {
+    const img = document.getElementById('invoiceImage');
+    console.log('Zoom Level:', zoomLevel);
+    console.log('Transform:', img.style.transform);
+    console.log('Image dimensions:', img.width, 'x', img.height);
+}
 </script>
 
 </body>
